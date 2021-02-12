@@ -187,3 +187,13 @@ int main(int argc, char *argv[]) {
     Simulator::Destroy ();
     return 0;
 }
+
+
+//* Command to Run cc
+//* cp examples/tutorial/first.cc scratch/myfirst.cc
+//* ./waf
+//* ./waf --run scratch/myfirst
+
+
+//* Command to Run Python
+//* ./waf --pyrun examples/tutorial/first.py
