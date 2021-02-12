@@ -1,8 +1,8 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// const int N = 1024;
-const int N = 512;
+// const int N = 9;
+const int N = 1024;
 
 int A[N][N], B[N][N], C[N][N];
 
@@ -10,6 +10,15 @@ double t[3];
 
 double get_seconds() {
     return (double) clock();
+}
+
+void displayResult(int temp[N][N]) {
+    for (int j = 0; j < N; j++) {
+        for (int i = 0; i < N; i++) {
+            cout << temp[i][j] <<" ";
+        }
+        cout << "\n";
+    }
 }
 
 int main() {
@@ -68,5 +77,6 @@ int main() {
     cout << "Matrix Multiplication time = " << t[1] << "\n";
     cout << "Matrix Correctness time = " << t[2] << "\n";
     cout << "Your code speed up = " << t[2]/t[1] << "x \n"; 
+
     return 0;
 }

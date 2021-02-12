@@ -1,8 +1,8 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// const int N = 1024;
-const int N = 512;
+const int N = 1024;
+// const int N = 512;
 
 int A[N][N], B[N][N], C[N][N];
 
@@ -10,6 +10,15 @@ double t[3];
 
 double get_seconds() {
     return (double) clock();
+}
+
+void displayResult(int temp[N][N]) {
+    for (int j = 0; j < N; j++) {
+        for (int i = 0; i < N; i++) {
+            cout << temp[i][j] <<" ";
+        }
+        // cout << "\n";
+    }
 }
 
 int main() {
@@ -35,10 +44,11 @@ int main() {
     for (int j = 0; j < N; j++) {
         for (int i = 0; i < N; i++) {
             for (int k = 0; k < N; k++) {
-                C[i][j] += A[k][i] + B[j][k];
+                C[i][j] += A[i][k] + B[k][j];
             }
         }
     }
+    
 
     stop = get_seconds();
     t[1] = double (stop - start) / CLOCKS_PER_SEC;
@@ -49,7 +59,7 @@ int main() {
         for (int i = 0; i < N; i++) {
             sum_ij = 0;
             for (int k = 0; k < N; k++) {
-                sum_ij += A[k][i] + B[j][k];
+                sum_ij += A[i][k] + B[k][j];
             }
 
             if (sum_ij != C[i][j]) {
@@ -60,6 +70,7 @@ int main() {
         }
         if (flag) break;
     }
+    
 
     stop = get_seconds();
     t[2] = double (stop - start) / CLOCKS_PER_SEC;
@@ -67,6 +78,14 @@ int main() {
     cout << "Matrix Initialization time = " << t[0] << "\n";
     cout << "Matrix Multiplication time = " << t[1] << "\n";
     cout << "Matrix Correctness time = " << t[2] << "\n";
-    cout << "Your code speed up = " << t[2]/t[1] << "x \n"; 
+    cout << "Your code speed up = " << t[2]/t[1] << "x \n";
+
+    // displayResult(A);
+    // cout << " " << " * " << " ";
+    // displayResult(B);
+    // cout << " = ";
+    // displayResult(C);
+    // cout << "\n";
+
     return 0;
 }
