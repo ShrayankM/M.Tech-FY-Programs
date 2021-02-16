@@ -19,6 +19,8 @@ void displayResult(int temp[N][N]) {
         }
         cout << "\n";
     }
+
+    // cout << temp[0][0] << " -- " << temp[N - 1][N - 1] << "\n";
 }
 
 int main() {
@@ -44,7 +46,7 @@ int main() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             for (int k = 0; k < N; k++) {
-                C[i][j] += A[i][k] + B[k][j];
+                C[i][j] += A[i][k] * B[k][j];
             }
         }
     }
@@ -58,7 +60,7 @@ int main() {
         for (int j = 0; j < N; j++) {
             sum_ij = 0;
             for (int k = 0; k < N; k++) {
-                sum_ij += A[i][k] + B[k][j];
+                sum_ij += A[i][k] * B[k][j];
             }
 
             if (sum_ij != C[i][j]) {
