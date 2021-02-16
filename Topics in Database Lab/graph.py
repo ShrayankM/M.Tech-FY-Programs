@@ -41,17 +41,6 @@ class DiGraph:
             if (not self.visited[i]):
                 self.dfs(i, i);
         return self.hasCycle;
-    
-    def createEdgeList(self, graph):
-        edgeList = [];
-        cnt = 0;
-        for i in range(self.vertices):
-            adj = self.adj(i);
-            for j in adj:
-                # edgeList.append(tuple([i, j]));
-                graph.add_edge(i, j, key = cnt);
-                cnt = cnt + 1;
-        return graph;
 
 
 file = open("transaction_input.txt", "r");
@@ -70,20 +59,3 @@ if g.detectCycle() == True:
     print("Not Conflict Serializable");
 else:
     print("Conflict Serializable");
-
-
-graph = nx.DiGraph();
-graph.add_nodes_from([i for i in range(g.V())]);
-
-# graph.add_edges_from(g.createEdgeList());
-# print(g.createEdgeList());
-
-graph = g.createEdgeList(graph);
-
-plt.figure(figsize =(7, 4)) 
-# nx.draw_networkx(graph, with_label = True, arrows = True, node_color ='orange')
-nx.draw(graph, with_labels=True, arrows = True, connectionstyle='arc3, rad = 0.12', node_color='orange');
-
-plt.show()
-
-
