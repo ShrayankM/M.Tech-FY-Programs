@@ -68,7 +68,7 @@ class DirectedCycle:
     def get_cycle(self):
         return self.cycle
 
-def show_graph(cycle, graph):
+def show_graph(cycle, graph, flag):
     G = nx.DiGraph()
     edges = []
     for v in range(graph.V()):
@@ -79,28 +79,31 @@ def show_graph(cycle, graph):
     # print(edges)
 
     G.add_edges_from(edges)
-    pos = nx.spring_layout(G)
+    pos = nx.circular_layout(G)
     plt.figure(figsize=(7, 7))
 
     #* Normal Nodes
     nx.draw_networkx_nodes(G, pos, nodelist=[v for v in range(graph.V())], node_size=500, node_color='orange')
 
     #* Cycle Nodes
-    nx.draw_networkx_nodes(G, pos, nodelist=cycle, node_size=500, node_color='green')
+    if (flag):
+        nx.draw_networkx_nodes(G, pos, nodelist=cycle, node_size=500, node_color='green')
 
-    start = 1
-    N = len(cycle)
-    cycle_edges = []
+    if (flag):
+        start = 1
+        N = len(cycle)
+        cycle_edges = []
 
-    while start > 0:
-        cycle_edges.append((cycle[start - 1], cycle[start]))
-        start = (start + 1) % N
+        while start > 0:
+            cycle_edges.append((cycle[start - 1], cycle[start]))
+            start = (start + 1) % N
     
     #* Normal Edges
     nx.draw_networkx_edges(G, pos, edgelist=G.edges(), connectionstyle='arc3, rad=0.09', edge_color='black', arrowstyle='-|>')
 
     #* Cycle Edges
-    nx.draw_networkx_edges(G, pos, edgelist=cycle_edges, connectionstyle='arc3, rad=0.09', edge_color='blue', arrowstyle='-|>')
+    if (flag):
+        nx.draw_networkx_edges(G, pos, edgelist=cycle_edges, connectionstyle='arc3, rad=0.09', edge_color='blue', arrowstyle='-|>')
 
     node_labels = dict()
 
@@ -109,9 +112,10 @@ def show_graph(cycle, graph):
     
     nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=8)
 
-    cycle_labels = dict()
-    for edge in cycle_edges:
-        cycle_labels[edge] = 'LOOP'
+    if (flag):
+        cycle_labels = dict()
+        for edge in cycle_edges:
+            cycle_labels[edge] = 'LOOP'
     
     # print(cycle_labels)
     # nx.draw_networkx_edge_labels(G, pos, edge_labels=cycle_labels)
@@ -135,7 +139,57 @@ di_cycle = DirectedCycle(graph)
 
 if (di_cycle.has_cycle()):
     cycle = di_cycle.get_cycle()[::-1]
-    show_graph(cycle, graph)
+    show_graph(cycle, graph, True)
     print("Not Conflict Serializable");
 else:
+    show_graph([], graph, False)
     print("Conflict Serializable");
+
+
+# 3 8
+# T0RA
+# T1WA
+# T2RB
+# T1WB
+# T0WB
+# T1RB
+# T0RA
+# T2RA
+
+# 3 9
+# T0RX
+# T2RZ
+# T2WZ
+# T1RY
+# T0RY
+# T1WY
+# T2WX
+# T1WZ
+# T0WX
+
+# 3 8
+# T0RX
+# T1RY
+# T2RY
+# T1WY
+# T0WX
+# T2WX
+# T1RX
+# T1WX
+
+# 3 6
+# T0RA
+# T1WA
+# T1RA
+# T2RA
+# T2WB
+# T0RB
+
+# 4 7
+# T3RA
+# T1RA
+# T2RA
+# T0WB
+# T1WA
+# T2RB
+# T1WB
