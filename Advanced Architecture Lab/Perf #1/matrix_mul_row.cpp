@@ -1,7 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// const int N = 9;
 const int N = 1024;
 
 int A[N][N], B[N][N], C[N][N];
@@ -33,7 +32,7 @@ int main() {
         for (int j = 0; j < N; j++) {
             A[i][j] = i - j;
             B[i][j] = i + j;
-            C[i][j] = 0;
+            // C[i][j] = 0;
         }
     }
 
@@ -75,10 +74,12 @@ int main() {
     stop = get_seconds();
     t[2] = double (stop - start) / CLOCKS_PER_SEC;
 
-    cout << "Matrix Initialization time = " << t[0] << "\n";
-    cout << "Matrix Multiplication time = " << t[1] << "\n";
+    cout << "Matrix Initialization time [" << N << " * " << N << "] Matrix = " << t[0] << "\n";
+    cout << "Matrix Multiplication time [" << N << " * " << N << "] Matrix = " << t[1] << "\n";
     cout << "Matrix Correctness time = " << t[2] << "\n";
     cout << "Your code speed up = " << t[2]/t[1] << "x \n"; 
+
+    // displayResult(C);
 
     return 0;
 }

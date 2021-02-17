@@ -1,7 +1,7 @@
 #include<bits/stdc++.h> 
 using namespace std; 
 
-const int N = 1024;
+const int N = 4096;
 int A[N][N], B[N][N], C[N][N];
 
 double t[3];

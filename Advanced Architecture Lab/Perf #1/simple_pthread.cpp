@@ -4,7 +4,7 @@
 
 using namespace std; 
 
-const int N = 2048;
+const int N = 1024;
 const int n = 32;
 
 const int T = (N * N)/(n * n);
