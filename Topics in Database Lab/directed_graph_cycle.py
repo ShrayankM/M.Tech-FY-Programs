@@ -1,7 +1,5 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from networkx.algorithms import planar_drawing
-from networkx.drawing.layout import planar_layout
 
 class DiGraph:
     def __init__(self, vertices):
@@ -78,18 +76,21 @@ def show_graph(cycle, graph, flag):
             edges.append(temp)
     # print(edges)
 
+    G.add_nodes_from([node for node in range(graph.V())])
     G.add_edges_from(edges)
     pos = nx.circular_layout(G)
     plt.figure(figsize=(7, 7))
 
     #* Normal Nodes
-    nx.draw_networkx_nodes(G, pos, nodelist=[v for v in range(graph.V())], node_size=500, node_color='orange')
+    nx.draw_networkx_nodes(G, pos, nodelist=[v for v in range(graph.V())], node_size=500, node_color='tomato', label='Non-Cycle Ts')
+
+    #* Normal Edges
+    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), connectionstyle='arc3, rad=0.09', edge_color='gray', min_source_margin=0, min_target_margin=12)
 
     #* Cycle Nodes
     if (flag):
-        nx.draw_networkx_nodes(G, pos, nodelist=cycle, node_size=500, node_color='green')
+        nx.draw_networkx_nodes(G, pos, nodelist=cycle, node_size=500, node_color='steelblue', label='Cycle Ts')
 
-    if (flag):
         start = 1
         N = len(cycle)
         cycle_edges = []
@@ -97,14 +98,14 @@ def show_graph(cycle, graph, flag):
         while start > 0:
             cycle_edges.append((cycle[start - 1], cycle[start]))
             start = (start + 1) % N
-    
-    #* Normal Edges
-    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), connectionstyle='arc3, rad=0.09', edge_color='black', arrowstyle='-|>')
+        
+         #* Cycle Edges
+        nx.draw_networkx_edges(G, pos, edgelist=cycle_edges, connectionstyle='arc3, rad=0.09', edge_color='black', min_source_margin=0, min_target_margin=12)
+        plt.title('Not Conflict Serilizable', loc='center', pad = 10)
+    else:
+        plt.title('Conflict Serilizable', loc='center', pad = 10)
 
-    #* Cycle Edges
-    if (flag):
-        nx.draw_networkx_edges(G, pos, edgelist=cycle_edges, connectionstyle='arc3, rad=0.09', edge_color='blue', arrowstyle='-|>')
-
+        
     node_labels = dict()
 
     for node in range(graph.V()):
@@ -112,84 +113,55 @@ def show_graph(cycle, graph, flag):
     
     nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=8)
 
-    if (flag):
-        cycle_labels = dict()
-        for edge in cycle_edges:
-            cycle_labels[edge] = 'LOOP'
-    
-    # print(cycle_labels)
-    # nx.draw_networkx_edge_labels(G, pos, edge_labels=cycle_labels)
+    plt.legend(markerscale=0.5, loc="upper left", frameon=False)
+    plt.savefig("graph_plot.jpg")
     plt.show()
 
 
-file = open("transaction_input.txt", "r");
+file = open("transaction_input.txt", "r")
 data = []
 for line in file:
-    data.append(line.strip());
+    data.append(line.strip())
 
-[transactionCnt, instructionCnt] = [int(data[0][0]), int(data[0][2])];
-instructions = data[1:];
+# print(data)
 
-graph = DiGraph(transactionCnt);
-graph.create_graph(instructionCnt, instructions);
+[transactionCnt, instructionCnt] = [int(data[0]), int(data[1])]
+instructions = data[2:]
+
+graph = DiGraph(transactionCnt)
+
+# print(transactionCnt, instructionCnt, instructions)
+graph.create_graph(instructionCnt, instructions)
 
 # graph.view_graph()
 
 di_cycle = DirectedCycle(graph)
 
+# print(di_cycle.has_cycle())
+
 if (di_cycle.has_cycle()):
     cycle = di_cycle.get_cycle()[::-1]
     show_graph(cycle, graph, True)
-    print("Not Conflict Serializable");
+    print("Not Conflict Serializable")
+    start = 1
+    N = len(cycle)
+
+    while start > 0:
+        print('Edge from', 'T'+str(cycle[start - 1]), '--> T'+str(cycle[start]))
+        start = (start + 1) % N
 else:
     show_graph([], graph, False)
-    print("Conflict Serializable");
+    print("Conflict Serializable")
+
+#* 6 10 [T0RA, T1WA, T1WB, T2WB, T2RC, T0WC, T3WD, T0WD, T4WA, T5RF] Not Conflict Serilizable
+#* 4 6 [T0RA, T1WA, T1WB, T2WB, T3RC, T0WC] Conflict Serilizable
 
 
-# 3 8
-# T0RA
-# T1WA
-# T2RB
-# T1WB
-# T0WB
-# T1RB
-# T0RA
-# T2RA
+#* jackson@ubuntu:~/GitHub/M.Tech-FY-Programs/Topics in Database Lab$ python3 directed_graph_cycle.py
+#* Not Conflict Serializable
+#* Edge from T2 --> T0
+#* Edge from T0 --> T1
+#* Edge from T1 --> T2
 
-# 3 9
-# T0RX
-# T2RZ
-# T2WZ
-# T1RY
-# T0RY
-# T1WY
-# T2WX
-# T1WZ
-# T0WX
-
-# 3 8
-# T0RX
-# T1RY
-# T2RY
-# T1WY
-# T0WX
-# T2WX
-# T1RX
-# T1WX
-
-# 3 6
-# T0RA
-# T1WA
-# T1RA
-# T2RA
-# T2WB
-# T0RB
-
-# 4 7
-# T3RA
-# T1RA
-# T2RA
-# T0WB
-# T1WA
-# T2RB
-# T1WB
+#* jackson@ubuntu:~/GitHub/M.Tech-FY-Programs/Topics in Database Lab$ python3 directed_graph_cycle.py
+#* Conflict Serializable
