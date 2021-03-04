@@ -1,11 +1,25 @@
-10
+24
 BEGIN(T1)
 READ(A, T1)
-A = [A + 100]_T1
+READ(B, T1)
+A = [A + 50]_T1
 BEGIN(T2)
-READ(B, T2)
-B = [B + 400]_T2
 WRITE(A, T1)
-WRITE(B, T2)
+B = [B + A]_T1
+WRITE(B, T1)
 COMMIT(T1)
+READ(A, T2)
+A = [A + 10]_T2
+READ(C, T2)
+C = [C + 50]_T2
+WRITE(A, T2)
+WRITE(C, T2)
+BEGIN(T3)
+BEGIN(T4)
+READ(E, T3)
+READ(F, T4)
 COMMIT(T2)
+E = [E + 600]_T3
+F = [F + 100]_T4
+WRITE(E, T3)
+WRITE(F, T4)
