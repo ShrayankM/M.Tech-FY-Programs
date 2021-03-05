@@ -82,14 +82,18 @@ def show_graph(cycle, graph, flag):
     plt.figure(figsize=(7, 7))
 
     #* Normal Nodes
-    nx.draw_networkx_nodes(G, pos, nodelist=[v for v in range(graph.V())], node_size=500, node_color='tomato', label='Non-Cycle Ts')
+    nx.draw_networkx_nodes(G, pos, nodelist=[v for v in range(graph.V())], 
+                           node_size=500, node_color='tomato', label='Non-Cycle Ts')
 
     #* Normal Edges
-    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), connectionstyle='arc3, rad=0.09', edge_color='gray', min_source_margin=0, min_target_margin=12)
+    nx.draw_networkx_edges(G, pos, edgelist=G.edges(), 
+                           connectionstyle='arc3, rad=0.09', edge_color='gray', 
+                           min_source_margin=0, min_target_margin=12)
 
     #* Cycle Nodes
     if (flag):
-        nx.draw_networkx_nodes(G, pos, nodelist=cycle, node_size=500, node_color='steelblue', label='Cycle Ts')
+        nx.draw_networkx_nodes(G, pos, nodelist=cycle, node_size=500, 
+                               node_color='steelblue', label='Cycle Ts')
 
         start = 1
         N = len(cycle)
@@ -100,7 +104,9 @@ def show_graph(cycle, graph, flag):
             start = (start + 1) % N
         
          #* Cycle Edges
-        nx.draw_networkx_edges(G, pos, edgelist=cycle_edges, connectionstyle='arc3, rad=0.09', edge_color='black', min_source_margin=0, min_target_margin=12)
+        nx.draw_networkx_edges(G, pos, edgelist=cycle_edges, 
+                               connectionstyle='arc3, rad=0.09', edge_color='black', 
+                               min_source_margin=0, min_target_margin=12)
         plt.title('Not Conflict Serilizable', loc='center', pad = 10)
     else:
         plt.title('Conflict Serilizable', loc='center', pad = 10)
