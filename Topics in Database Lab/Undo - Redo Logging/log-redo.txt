@@ -1,0 +1,9 @@
+<START T1>
+<T1 A 100>
+<COMMIT T1>
+<START T2>
+<T2 B 25>
+<T2 C 75>
+<COMMIT T2>
+<END T1>
+<END T2>

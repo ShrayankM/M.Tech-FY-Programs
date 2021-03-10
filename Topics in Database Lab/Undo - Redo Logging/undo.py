@@ -4,27 +4,40 @@ from tabulate import tabulate
 transactions_dict = {}
 temp_values = {}
 main_disk = {
-    'A': 100,
-    'B': 200,
-    'C': 500,
-    'D': 300,
-    'E': 50,
-    'F': -100,
+    'A': 0,
+    'B': 0,
+    'C': 0,
 }
 cache_disk = {}
+
 class transaction_data:
     def __init__(self, transaction_id):
         self.transaction_id = transaction_id
         self.data_items = list()
-    
+
 def get_value(ins, a, b):
     if (ins.find('+') > -1): return a + b
     if (ins.find('-') > -1): return a - b
     if (ins.find('*') > -1): return a * b
     if (ins.find('/') > -1): return a / b
 
-def create_log(instrus_cnt, instructions):
-    log_file = open("log.txt", "w")
+def load_data_to_cache(main_disk, cache_disk):
+    for key, value in main_disk.items():
+        cache_disk[key] = value
+
+def read_transaction_file(filename):
+    file = open(filename, "r")
+    data = []
+
+    for line in file:
+        data.append(line.strip())
+
+    instrus_cnt = int(data[0])
+    instructions = data[1:]
+    return instrus_cnt, instructions
+
+def create_log(instrus_cnt, instructions, type):
+    log_file = open("log-undo.txt", "w")
     for i in range(instrus_cnt):
         ins = instructions[i]
 
@@ -39,14 +52,16 @@ def create_log(instrus_cnt, instructions):
             if (operation == 'READ'):
                 data_item = ins[ins.find('(') + 1:ins.find(',')]
                 transaction = ins[ins.find(' ') + 1:ins.find(')')]
-                log_file.write(f"<{transaction} READ {data_item}>\n")
+                # log_file.write(f"<{transaction} READ {data_item}>\n")
                 temp_values[data_item] = cache_disk[data_item]
             
             if (operation == 'WRITE'):
                 data_item = ins[ins.find('(') + 1:ins.find(',')]
                 transaction = ins[ins.find(' ') + 1:ins.find(')')]
-                log_file.write(f"<{transaction} WRITE {data_item}>\n")
+                log_file.write(f"<{transaction} {data_item} {cache_disk[data_item]}>\n")
                 cache_disk[data_item] = temp_values[data_item]
+                if type == 1:
+                    main_disk[data_item] = cache_disk[data_item]
                 transactions_dict[transaction].data_items.append(data_item)
             
             if (operation == 'COMMIT'):
@@ -54,8 +69,9 @@ def create_log(instrus_cnt, instructions):
                 log_file.write(f"<COMMIT {transaction}>\n")
                 data_list = transactions_dict[transaction].data_items
 
-                for d in data_list:
-                    main_disk[d] = cache_disk[d]
+                if type == 0:
+                    for d in data_list:
+                        main_disk[d] = cache_disk[d]
 
         #* Arithematic Operations
         else: 
@@ -80,103 +96,50 @@ def create_log(instrus_cnt, instructions):
                 b = cache_disk[b]
             current_value = cache_disk[updating_data]
             updated_value = get_value(ins, a, b)
-            log_file.write(f"<{ins[ins.find('_') + 1:]} {updating_data} {current_value} {updated_value}>\n")
             temp_values[updating_data] = updated_value
             continue  
+    log_file.close()
 
 def simulate_crash(log_file):
-    started_transactions = set()
-    commited_transactions = set()
-    uncommited_transactions = set()
-    temp_values = {}
+    uncommited_transactions = dict()
 
     #* Get all started transactions
     file = open(log_file, "r")
     for line in file:
         if line.find('START') == 1:
-            started_transactions.add(line[line.find(' ') + 1:line.find('>')])
+            uncommited_transactions[line[line.find(' ') + 1:line.find('>')]] = list()
     file.close()
-    
-    #* Get all commited transactions
-    file = open(log_file, "r")
-    for line in file:
-        if line.find('COMMIT') == 1:
-            commited_transactions.add(line[line.find(' ') + 1:line.find('>')])
-    file.close()
-
-    # uncommited_transactions = started_transactions - commited_transactions
-
-    #TODO For all Commited Transactions (Redo)
+                 
     #TODO For all Uncommited Transactions (Undo)
 
     file = open(log_file, "r")
     for line in file:
-        if (line.find('START') == 1 or line.find('COMMIT') == 1): 
-            continue
-        line = line.replace('>', '').replace('<', '').replace('\n', '').split(' ')
+        line_temp = line.replace('>', '').replace('<', '').replace('\n', '').split(' ')
+        if len(line_temp) == 3:
+            transaction_id = line_temp[0]
+            uncommited_transactions[transaction_id].append(line.replace('\n', ''))
+    
+    log_file = open(log_file, "a+")
         
-        if len(line) == 3: #* READ/WRITE OPERATION
-            if line[1] == 'READ': 
-                continue
+    #* Perform Backward updates
+    for tid, operations in uncommited_transactions.items():
+        operations = operations[::-1]
+        for op in operations:
+            op = op.replace('>', '').replace('<', '').split(' ')
+            transaction_id, data_item, old_value = op[0:]
+            main_disk[data_item] = old_value
+        log_file.write(f"<ABORT {tid}>\n")
 
-            transaction_id, _, data_item = line[0:]
-            # print(temp_values)
-            data_list = temp_values[transaction_id]
-
-            for data in data_list:
-                if (data[0] == data_item):
-                    main_disk[data_item] = data[1]
-
-
-        if len(line) == 4:
-            transaction_id, data_item, old_value, new_value = line[0:]
-            flag = False
-            for t in commited_transactions:   
-                if t == transaction_id:
-                    flag = True
-                    break
-            
-            if temp_values.get(transaction_id) == None:
-                temp_values[transaction_id] = list()
-            
-            if flag:
-                temp_values[transaction_id].append([data_item, new_value])
-            else:
-                temp_values[transaction_id].append([data_item, old_value])
-
-                 
-
-def load_data_to_cache(main_disk, cache_disk):
-    for key, value in main_disk.items():
-        cache_disk[key] = value
-
-def read_transaction_file(filename):
-    file = open(filename, "r")
-    data = []
-
-    for line in file:
-        data.append(line.strip())
-
-    instrus_cnt = int(data[0])
-    instructions = data[1:]
-    return instrus_cnt, instructions
+    file.close()
 
 if __name__ == "__main__":
-    filename = "transaction_input.txt"
+    filename = "transactions-undo.txt"
     instrus_cnt, instructions = read_transaction_file(filename)
 
     load_data_to_cache(main_disk, cache_disk)
-    create_log(instrus_cnt, instructions)
 
-    # print("========== BEFORE CRASH ========== ")
-    # print(f"CACHE_DISK = {cache_disk}")
-    # print(f"DATABASE = {main_disk}\n")
-
-    # log_filename = "log.txt"
-    # simulate_crash(log_filename)
-
-    # print("========== AFTER CRASH ========== ")
-    # print(f"DATABASE = {main_disk}\n")
+    type_of_updation = 1
+    create_log(instrus_cnt, instructions, type_of_updation) 
 
     cnt = 1
     data = []
@@ -185,7 +148,7 @@ if __name__ == "__main__":
     cache_values = list(cache_disk.values())
     disk_bc = list(main_disk.values())
 
-    log_filename = "log.txt"
+    log_filename = "log-undo.txt"
     simulate_crash(log_filename)
 
     disk_ac = list(main_disk.values())
@@ -194,5 +157,20 @@ if __name__ == "__main__":
         data.append([cnt, data_items[cnt - 1], cache_values[cnt - 1], disk_bc[cnt - 1], disk_ac[cnt - 1]])
         cnt += 1
     
-    # print(data)
+    str = ''
+    if type_of_updation == 0:
+        str = "Defered Update"
+    if type_of_updation == 1:
+        str = "Immediate Update"
+    
+    print("Type of Updation Policy = " + str)
     print (tabulate(data, headers=["No.", "Data Item", "Cache", "Disk[Before Crash]", "Disk[After Crash]"]))
+
+#TODO --------------------------- OUTPUT ------------------------------ #  
+#* Type of Updation Policy = Immediate Update
+#*   No.  Data Item      Cache    Disk[Before Crash]    Disk[After Crash]
+#* -----  -----------  -------  --------------------  -------------------
+#*     1  A                100                   100                    0
+#*     2  B                 50                    50                    0
+#*     3  C                 50                    50                    0
+#TODO ----------------------------------------------------------------- #

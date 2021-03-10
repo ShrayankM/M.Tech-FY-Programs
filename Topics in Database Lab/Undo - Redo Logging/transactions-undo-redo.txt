@@ -1,4 +1,4 @@
-24
+29
 BEGIN(T1)
 READ(A, T1)
 READ(B, T1)
@@ -15,11 +15,16 @@ C = [C + 50]_T2
 WRITE(A, T2)
 WRITE(C, T2)
 BEGIN(T3)
-BEGIN(T4)
-READ(E, T3)
-READ(F, T4)
+READ(D, T3)
 COMMIT(T2)
-E = [E + 600]_T3
-F = [F + 100]_T4
-WRITE(E, T3)
+D = [D + 100]_T3
+WRITE(D, T3)
+BEGIN(T4)
+READ(E, T4)
+E = [E + 10]_T4
+WRITE(E, T4)
+READ(F, T4)
+F = [F + E]_T4
 WRITE(F, T4)
+E = [E + F]_T4
+WRITE(E, T4)
