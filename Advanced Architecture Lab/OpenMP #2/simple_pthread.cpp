@@ -5,7 +5,7 @@
 using namespace std; 
 
 const int N = 1024;
-const int n = 64;
+const int n = 128;
 
 const int T = (N * N)/(n * n);
 
@@ -75,26 +75,26 @@ int main(){
     int start, stop;
     time_t begin, end;
 
-    start = getSecondsCpu();
-    time(&begin);
+    // start = getSecondsCpu();
+    // time(&begin);
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            for (int k = 0; k < N; k++) {
-                D[i][j] += A[i][k] * B[k][j];
-            }
-        }
-    }
+    // for (int i = 0; i < N; i++) {
+    //     for (int j = 0; j < N; j++) {
+    //         for (int k = 0; k < N; k++) {
+    //             D[i][j] += A[i][k] * B[k][j];
+    //         }
+    //     }
+    // }
 
-    stop = getSecondsCpu();
-    time(&end);
+    // stop = getSecondsCpu();
+    // time(&end);
 
     cout << "TILE SIZE = " << n << "\n";
 
-    cout << "(CPU  SECS) Time taken to multiply " << N << " * " << N << " matrix (NORMAL) = " << double (stop - start) / CLOCKS_PER_SEC << " secs\n";
-    cout << "(WALL SECS) Time taken to multiply " << N << " * " << N << " matrix (NORMAL) = " << (end - begin) << " secs\n";
+    // cout << "(CPU  SECS) Time taken to multiply " << N << " * " << N << " matrix (NORMAL) = " << double (stop - start) / CLOCKS_PER_SEC << " secs\n";
+    // cout << "(WALL SECS) Time taken to multiply " << N << " * " << N << " matrix (NORMAL) = " << (end - begin) << " secs\n";
 
-    cout << "=============================================================================\n";
+    // cout << "=============================================================================\n";
 
     pthread_t threads[T];
 
