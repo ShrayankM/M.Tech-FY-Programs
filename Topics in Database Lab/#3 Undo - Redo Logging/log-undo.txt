@@ -1,0 +1,7 @@
+<START T1>
+<T1 A 0>
+<START T2>
+<T2 B 0>
+<T2 C 0>
+<ABORT T1>
+<ABORT T2>
