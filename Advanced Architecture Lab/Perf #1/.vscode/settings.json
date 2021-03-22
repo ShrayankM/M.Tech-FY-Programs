@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.html": "html",
-        "*.py": "python",
-        "*.scss": "scss",
-        "iostream": "cpp"
-    }
-}
