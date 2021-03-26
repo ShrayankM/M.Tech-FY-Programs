@@ -4,7 +4,8 @@
 using namespace std;
 
 #define N int(1E5)
-#define MAX_NUM 20
+#define THREAD 32
+#define MAX_NUM 50
 
 void displayArr(int A[]) {
     for (int i = 0; i < N; i++) 
@@ -31,7 +32,7 @@ void quicksort(int A[], int L, int H, int type) {
     if (L < H) {
         int pivotPos = partition(A, L, H);
 
-        if (type == 1 && (L + (pivotPos - 1)) > 1000) {
+        if (type == 1) {
             #pragma omp task
             {
                 quicksort(A, L, pivotPos - 1, type);
@@ -52,6 +53,8 @@ void quicksort(int A[], int L, int H, int type) {
 }
 
 int main() {
+
+    cout << "Threads = " << THREAD << endl;
     
     srand((unsigned) time(0));
     int arr[N];
@@ -67,7 +70,7 @@ int main() {
     cout << "SEQUENTIAL TIME = " << dtime << " secs." << endl;
     // displayArr(arr);
 
-    omp_set_num_threads(4);
+    omp_set_num_threads(THREAD);
     for (int i = 0; i < N; i++) {
         arr[i] = (rand() % MAX_NUM) + 1;
     }

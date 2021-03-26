@@ -3,6 +3,7 @@
 using namespace std;
 
 #define N int(1E5)
+#define THREAD 4
 
 bool memo[N];
 long fibStore[N];
@@ -41,6 +42,7 @@ long fib(int n, int type) {
 
 int main() {
 
+    cout << "Threads = " << THREAD << endl;
     int n = int(90);
     double dtime;
 
@@ -48,7 +50,9 @@ int main() {
     cout << "Fib(" << n << ") = " << fib(n, 0) << endl;
     dtime = omp_get_wtime() - dtime;
 
-    cout << "SEQUENTIAL TIME = " << dtime << " secs." << endl;
+    cout << "SEQUENTIAL TIME = " << dtime << " secs." << endl << "\n";
+
+    omp_set_num_threads(THREAD);
 
     dtime = omp_get_wtime();
     #pragma omp parallel 

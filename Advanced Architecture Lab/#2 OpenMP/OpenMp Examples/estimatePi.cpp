@@ -6,6 +6,8 @@ using namespace std;
 
 int main() {
 
+    cout << "Threads = " << THREAD << endl;
+
     int n = 1E8;
 
     double sum = 0.0, factor = 1.0;
