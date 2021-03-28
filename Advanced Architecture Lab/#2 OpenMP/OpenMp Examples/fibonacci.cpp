@@ -3,7 +3,7 @@
 using namespace std;
 
 #define N int(1E5)
-#define THREAD 4
+#define THREAD 1
 
 bool memo[N];
 long fibStore[N];
@@ -43,7 +43,7 @@ long fib(int n, int type) {
 int main() {
 
     cout << "Threads = " << THREAD << endl;
-    int n = int(90);
+    int n = int(60);
     double dtime;
 
     dtime = omp_get_wtime();
