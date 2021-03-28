@@ -25,6 +25,10 @@ from nest.experiment import *
 N = 6
 R = 3
 
+qdisc = 'codel'
+qdisc_parameters = {'ce_threshold': '4.8ms',
+                          'limit': '1000', 'target': '100ms', 'ecn': ''}
+
 @unittest.skipUnless(isfile("/usr/lib/frr/zebra"), "Frrouting is not installed")
 class TestFrr(unittest.TestCase):
     def setUp(self):
@@ -107,6 +111,7 @@ class TestFrr(unittest.TestCase):
         self.routers[2].add_route('DEFAULT', self.r2_r1)
 
         #* Setting Connection Attributes
+
         self.r0_r1.set_attributes("20mbit", "50ms")
         self.r1_r0.set_attributes("20mbit", "50ms")
         self.r1_r2.set_attributes("20mbit", "50ms")
