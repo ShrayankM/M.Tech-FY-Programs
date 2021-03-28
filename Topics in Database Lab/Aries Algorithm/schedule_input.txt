@@ -1,0 +1,6 @@
+5
+BEGIN(T1)
+READ(A, T1)
+A = [A + 2]_T1
+WRITE(A, T1)
+COMMIT(T1)
