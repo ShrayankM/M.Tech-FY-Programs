@@ -1,8 +1,11 @@
+from tabulate import tabulate
 
 #* Data-Structures
 
 LOG_MAIN = {}
 LOG_DISK = {}
+
+flushedLSN = None
 
 class LogRecord:
     def __init__(self, LSN, prevLSN, TxnId, type, dataItem, before, after, undoNext):
@@ -15,8 +18,8 @@ class LogRecord:
         self.after = after
         self.undoNext = undoNext
     
-    def __str__(self):
-        return str(self.LSN) + " " + str(self.prevLSN) + " " + str(self.TxnId) 
+    def get_record(self):
+        return [str(self.LSN), str(self.prevLSN), str(self.TxnId), str(self.type), str(self.dataItem), str(self.before), str(self.after), str(self.undoNext)] 
 
 class Page:
     def __init__(self, pageId, data):
@@ -25,8 +28,8 @@ class Page:
         self.recLSN = None
         self.data = data
     
-    def __str__(self):
-        return str(self.pageId) + " " + str(self.pageLSN) + " " + str(self.recLSN) + " " + str(self.data) 
+    def get_page(self):
+        return [str(self.pageId), str(self.pageLSN), str(self.recLSN), str(self.data)] 
     
     def search_data(self, d):
         if self.data.get(d): return self.pageId
@@ -41,8 +44,8 @@ class ActiveTransaction:
         self.status = status
         self.lastLSN = lastLSN
     
-    def __str__(self):
-        return str(self.transactionId) + " " + str(self.status) + " " + str(self.lastLSN)
+    def get_active_transaction(self):
+        return [str(self.transactionId), str(self.status), str(self.lastLSN)]
 
 page_table = {
     'A': '1',
@@ -59,5 +62,6 @@ disk_memory = {
 }
 
 active_transaction_table = {}
+dirty_page_table = {}
 
 temp_values = {}
