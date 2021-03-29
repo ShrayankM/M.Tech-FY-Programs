@@ -1,6 +1,17 @@
-5
+16
 BEGIN(T1)
 READ(A, T1)
 A = [A + 2]_T1
 WRITE(A, T1)
+READ(C, T1)
+C = [C + 5]_T1
+WRITE(C, T1)
+READ(B, T1)
+B = [B - 3]_T1
+WRITE(B, T1)
 COMMIT(T1)
+BEGIN(T2)
+READ(D, T2)
+D = [D + 15]_T2
+WRITE(D, T2)
+COMMIT(T2)
