@@ -1,0 +1,13 @@
+BEGIN(T1)
+READ(A, T1)
+A = [A + 10]_T1
+READ(B, T1)
+B = [B - 10]_T1
+WRITE(A, T1)
+WRITE(B, T1)
+BEGIN(T2)
+READ(C, T2)
+C = [C + 10]_T2
+WRITE(C, T2)
+COMMIT(T2)
+CRASH()
