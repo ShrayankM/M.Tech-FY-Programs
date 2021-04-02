@@ -9,7 +9,6 @@ def get_value(ins, a, b):
     if (ins.find('/') > -1): return a / b
 
 def execute_instructions(instructions):
-    LSN = 0
     for ins in instructions:
 
         #* Normal Operations
@@ -26,13 +25,13 @@ def execute_instructions(instructions):
             if (operation == 'CHECKPOINT'):
 
                 checkpointData = ds.CheckPoint(ds.ATT, ds.DPT)
-                ds.masterRecord[0] = LSN
+                ds.masterRecord[0] = ds.LSN
                 ds.masterRecord[1] = checkpointData
 
-                log = ds.LogRecord(LSN, None, None, 'CHECKPOINT', '-', '-', '-', '-')
-                ds.LOG_MEMORY[LSN] = log
+                log = ds.LogRecord(ds.LSN, None, None, 'CHECKPOINT', '-', '-', '-', '-')
+                ds.LOG_MEMORY[ds.LSN] = log
 
-                LSN += 1
+                ds.LSN += 1
 
                 #* Flushing pages from MEMORY TO DISK
                 # pages_to_remove = []
@@ -51,10 +50,10 @@ def execute_instructions(instructions):
             
             if (operation == "BEGIN"):
                 transactionId = ins[ins.find('(') + 1:ins.find(')')]
-                log = ds.LogRecord(LSN, None, transactionId, 'BEGIN', '-', '-', '-', '-')
-                ds.LOG_MEMORY[LSN] = log
-                ds.ATT[transactionId] = ds.ActiveTransaction(transactionId, 'UNDO', LSN)
-                LSN += 1
+                log = ds.LogRecord(ds.LSN, None, transactionId, 'BEGIN', '-', '-', '-', '-')
+                ds.LOG_MEMORY[ds.LSN] = log
+                ds.ATT[transactionId] = ds.ActiveTransaction(transactionId, 'UNDO', ds.LSN)
+                ds.LSN += 1
             
             if (operation == 'READ'):
                 data_variable = ins[ins.find('(') + 1:ins.find(',')]
@@ -71,28 +70,28 @@ def execute_instructions(instructions):
                 transactionId = ins[ins.find(' ') + 1:ins.find(')')]
 
                 prevLSN = ds.ATT[transactionId].lastLSN
-                ds.ATT[transactionId].lastLSN = LSN
+                ds.ATT[transactionId].lastLSN = ds.LSN
 
                 pageId = ds.page_mapping[data_variable]
                 before = ds.MEMORY[pageId].data.get(data_variable)
                 after = ds.temp_buffer[data_variable]
 
                 #* Writing Update Log record to MEMORY
-                log = ds.LogRecord(LSN, prevLSN, transactionId, 'UPDATE', data_variable, before, after, '-')
-                ds.LOG_MEMORY[LSN] = log
+                log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'UPDATE', data_variable, before, after, '-')
+                ds.LOG_MEMORY[ds.LSN] = log
                 
                 #* Updating the pages in MEMORY
                 ds.MEMORY[pageId].data[data_variable] = after
-                ds.MEMORY[pageId].pageLSN = LSN
+                ds.MEMORY[pageId].pageLSN = ds.LSN
 
                 if ds.MEMORY[pageId].recLSN == None:
-                    ds.MEMORY[pageId].recLSN = LSN
+                    ds.MEMORY[pageId].recLSN = ds.LSN
                 
                 #* Adding pages to dirty page table (DPT)
                 if ds.DPT.get(pageId) == None:
-                    ds.DPT[pageId] = LSN
+                    ds.DPT[pageId] = ds.LSN
 
-                LSN += 1
+                ds.LSN += 1
 
             if (operation == 'COMMIT'):
                 transactionId = ins[ins.find('(') + 1:ins.find(')')]
@@ -102,19 +101,19 @@ def execute_instructions(instructions):
                 ds.ATT[transactionId].status = 'COMMIT'
 
                 prevLSN = ds.ATT[transactionId].lastLSN
-                ds.ATT[transactionId].lastLSN = LSN
+                ds.ATT[transactionId].lastLSN = ds.LSN
 
                 #* Writing COMMIT Log record to MEMORY
-                log = ds.LogRecord(LSN, prevLSN, transactionId, 'COMMIT', '-', '-', '-', '-')
-                ds.LOG_MEMORY[LSN] = log
+                log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'COMMIT', '-', '-', '-', '-')
+                ds.LOG_MEMORY[ds.LSN] = log
 
                 #* Flushing all logs from MEMORY to DISK
                 for LSN, log in ds.LOG_MEMORY.items():
                     ds.LOG_DISK[LSN] = log
                 ds.LOG_MEMORY.clear()
 
-                ds.flushedLSN = LSN
-                LSN += 1
+                ds.flushedLSN = ds.LSN
+                ds.LSN += 1
 
 
             if (operation == 'ABORT'):
@@ -123,28 +122,28 @@ def execute_instructions(instructions):
                 ds.ATT[transactionId].status = 'ABORT'
 
                 prevLSN = ds.ATT[transactionId].lastLSN
-                ds.ATT[transactionId].lastLSN = LSN
+                ds.ATT[transactionId].lastLSN = ds.LSN
 
                 #* Writing ABORT Log record to MEMORY
-                log = ds.LogRecord(LSN, prevLSN, transactionId, 'ABORT', '-', '-', '-', '-')
-                ds.LOG_MEMORY[LSN] = log
+                log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'ABORT', '-', '-', '-', '-')
+                ds.LOG_MEMORY[ds.LSN] = log
 
-                LSN += 1
+                ds.LSN += 1
 
                 prev = prevLSN
                 while prev != None:
                     log = ds.LOG_MEMORY[prev]
                     if log.type == 'UPDATE':
                         prevLSN = ds.ATT[transactionId].lastLSN
-                        ds.ATT[transactionId].lastLSN = LSN
-                        clr_log = ds.LogRecord(LSN, prevLSN, transactionId, 'CLR', log.dataItem, log.after, log.before, log.prevLSN)
-                        ds.LOG_MEMORY[LSN] = clr_log
+                        ds.ATT[transactionId].lastLSN = ds.LSN
+                        clr_log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'CLR', log.dataItem, log.after, log.before, log.prevLSN)
+                        ds.LOG_MEMORY[ds.LSN] = clr_log
 
                         pageId = ds.page_mapping[log.dataItem]
                         #* Updating the pages in MEMORY
                         ds.MEMORY[pageId].data[log.dataItem] = log.before
-                        ds.MEMORY[pageId].pageLSN = LSN
-                        LSN += 1
+                        ds.MEMORY[pageId].pageLSN = ds.LSN
+                        ds.LSN += 1
                     prev = log.prevLSN
                 
                 #* Flushing all logs from MEMORY to DISK
@@ -152,8 +151,8 @@ def execute_instructions(instructions):
                     ds.LOG_DISK[LSN] = log
                 ds.LOG_MEMORY.clear()
 
-                ds.flushedLSN = LSN
-                LSN += 1
+                ds.flushedLSN = ds.LSN
+                ds.LSN += 1
 
         else:
             updating_data = ins[0]

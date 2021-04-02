@@ -1,6 +1,9 @@
 from tabulate import tabulate
 import copy
 
+#* Keep track of the LSN no. for logs
+LSN = 0
+
 #* Storage for Log Records(On disk and on Memory)
 LOG_DISK = {}
 LOG_MEMORY = {}

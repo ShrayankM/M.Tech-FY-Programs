@@ -71,20 +71,14 @@ def redo_phase():
         if transactionInfo.status == 'COMMIT' or transactionInfo.status == 'ABORT':
             transactions_to_remove.append(transactionId)
             prevLSN = ds.ATT[transactionId].lastLSN
-            log = ds.LogRecord(LSN, prevLSN, transactionId, 'END', '-', '-', '-', '-')
-            ds.LOG_MEMORY[LSN] = log
-            LSN += 1
+            log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'END', '-', '-', '-', '-')
+            ds.LOG_MEMORY[ds.LSN] = log
+            ds.LSN += 1
     
     for tid in transactions_to_remove:
         ds.ATT.pop(tid)
 
 def undo_phase():
-    currentLSN = 0
-
-    for LSN in ds.LOG_DISK.keys():
-        currentLSN = LSN
-    
-    currentLSN += 1
     
     transactions_to_remove = []
     for transactionId, transaction in ds.ATT.items():
@@ -94,32 +88,33 @@ def undo_phase():
             log = ds.LOG_DISK[LSN]
             if log.type == 'UPDATE':
                 prevLSN = ds.ATT[transactionId].lastLSN
-                ds.ATT[transactionId].lastLSN = currentLSN
+                ds.ATT[transactionId].lastLSN = ds.LSN
 
                 #* Adding CLR's for undo Updates
-                clr_log = ds.LogRecord(currentLSN, prevLSN, transactionId, 'CLR', log.dataItem, log.after, log.before, log.prevLSN)
-                ds.LOG_MEMORY[currentLSN] = clr_log
+                clr_log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'CLR', log.dataItem, log.after, log.before, log.prevLSN)
+                ds.LOG_MEMORY[ds.LSN] = clr_log
 
                 #* Undoing the operations on pages
                 pageId = ds.page_mapping[log.dataItem]
                 ds.MEMORY[pageId].data[log.dataItem] = log.before
-                ds.MEMORY[pageId].pageLSN = currentLSN
+                ds.MEMORY[pageId].pageLSN = ds.LSN
 
-                currentLSN += 1
+                ds.LSN += 1
             LSN = log.prevLSN
         
         prevLSN = ds.ATT[transactionId].lastLSN
-        log = ds.LogRecord(currentLSN, prevLSN, transactionId, 'ABORT', '-', '-', '-', '-')
+        ds.ATT[transactionId].lastLSN = ds.LSN
+        log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'ABORT', '-', '-', '-', '-')
 
-        ds.LOG_MEMORY[currentLSN] = log
+        ds.LOG_MEMORY[ds.LSN] = log
 
         #* Flushing all logs from MEMORY to DISK
         for LSN, log in ds.LOG_MEMORY.items():
             ds.LOG_DISK[LSN] = log
         ds.LOG_MEMORY.clear()
         
-        ds.flushedLSN = currentLSN
-        currentLSN += 1
+        ds.flushedLSN = ds.LSN
+        ds.LSN += 1
 
         #* Flushing pages from MEMORY TO DISK
         pages_to_remove = []
@@ -134,11 +129,11 @@ def undo_phase():
         
         #* Writing the TXN-END log record
         prevLSN = ds.ATT[transactionId].lastLSN
-        log = ds.LogRecord(currentLSN, prevLSN, transactionId, 'END', '-', '-', '-', '-')
-        ds.LOG_MEMORY[currentLSN] = log
+        log = ds.LogRecord(ds.LSN, prevLSN, transactionId, 'END', '-', '-', '-', '-')
+        ds.LOG_MEMORY[ds.LSN] = log
 
         transactions_to_remove.append(transactionId)
-        currentLSN += 1
+        ds.LSN += 1
     
     for tid in transactions_to_remove:
         ds.ATT.pop(tid)
