@@ -1,0 +1,235 @@
+############################# SYSTEM STATE BEFORE CRASH #############################
+  Log Records[On MEMORY]
+LSN    prevLSN    TxnId    type    data    before    after    undoNext
+-----  ---------  -------  ------  ------  --------  -------  ----------
+
+  Log Records[On DISK]
+  LSN  prevLSN    TxnId    type        data    before    after    undoNext
+-----  ---------  -------  ----------  ------  --------  -------  ----------
+    0  None       T1       BEGIN       -       -         -        -
+    1  0          T1       UPDATE      A       5         15       -
+    2  1          T1       UPDATE      C       10        15       -
+    3  2          T1       UPDATE      B       15        30       -
+    4  None       T2       BEGIN       -       -         -        -
+    5  4          T2       UPDATE      F       6         13       -
+    6  5          T2       COMMIT      -       -         -        -
+    7  None       None     CHECKPOINT  -       -         -        -
+    8  None       T3       BEGIN       -       -         -        -
+    9  8          T3       UPDATE      F       13        29       -
+   10  9          T3       UPDATE      E       20        70       -
+   11  10         T3       ABORT       -       -         -        -
+   12  11         T3       CLR         E       70        20       9
+   13  12         T3       CLR         F       29        13       8
+
+  MEMORY [Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  ------------------
+       1          3         1  {'A': 15, 'B': 30}
+       2          2         2  {'C': 15, 'D': 6}
+       3         13         5  {'E': 20, 'F': 13}
+
+  DISK MEMORY [NON-Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  ------------------
+       1          3         1  {'A': 15, 'B': 30}
+       2          2         2  {'C': 15, 'D': 6}
+       3          5         5  {'E': 20, 'F': 13}
+
+  Dirty Page Table(DPT)
+  PageId    recLSN
+--------  --------
+       1         1
+       2         2
+       3         5
+
+Active Transaction Table(ATT)
+TransactionId    status      lastLSN
+---------------  --------  ---------
+T1               UNDO              3
+T2               COMMIT            6
+T3               ABORT            13
+#####################################################################################
+
+############################# SYSTEM STATE AFTER RECOVERY ###########################
+  Log Records[On MEMORY]
+  LSN    prevLSN  TxnId    type    data    before    after    undoNext
+-----  ---------  -------  ------  ------  --------  -------  ----------
+   21         20  T1       END     -       -         -        -
+
+  Log Records[On DISK]
+  LSN  prevLSN    TxnId    type        data    before    after    undoNext
+-----  ---------  -------  ----------  ------  --------  -------  ----------
+    0  None       T1       BEGIN       -       -         -        -
+    1  0          T1       UPDATE      A       5         15       -
+    2  1          T1       UPDATE      C       10        15       -
+    3  2          T1       UPDATE      B       15        30       -
+    4  None       T2       BEGIN       -       -         -        -
+    5  4          T2       UPDATE      F       6         13       -
+    6  5          T2       COMMIT      -       -         -        -
+    7  None       None     CHECKPOINT  -       -         -        -
+    8  None       T3       BEGIN       -       -         -        -
+    9  8          T3       UPDATE      F       13        29       -
+   10  9          T3       UPDATE      E       20        70       -
+   11  10         T3       ABORT       -       -         -        -
+   12  11         T3       CLR         E       70        20       9
+   13  12         T3       CLR         F       29        13       8
+   15  6          T2       END         -       -         -        -
+   16  11         T3       END         -       -         -        -
+   17  3          T1       CLR         B       30        15       2
+   18  17         T1       CLR         C       15        10       1
+   19  18         T1       CLR         A       15        5        0
+   20  19         T1       ABORT       -       -         -        -
+
+  MEMORY [Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  ------------------
+       1         19         1  {'A': 5, 'B': 15}
+       2         18         2  {'C': 10, 'D': 6}
+       3         13         5  {'E': 20, 'F': 13}
+
+  DISK MEMORY [NON-Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  ------------------
+       1         19         1  {'A': 5, 'B': 15}
+       2         18         2  {'C': 10, 'D': 6}
+       3         13         5  {'E': 20, 'F': 13}
+
+  Dirty Page Table(DPT)
+PageId    recLSN
+--------  --------
+
+Active Transaction Table(ATT)
+TransactionId    status    lastLSN
+---------------  --------  ---------
+#####################################################################################
+
+############################# SYSTEM STATE BEFORE CRASH #############################
+  Log Records[On MEMORY]
+LSN    prevLSN    TxnId    type    data    before    after    undoNext
+-----  ---------  -------  ------  ------  --------  -------  ----------
+
+  Log Records[On DISK]
+  LSN  prevLSN    TxnId    type        data    before    after    undoNext
+-----  ---------  -------  ----------  ------  --------  -------  ----------
+    0  None       T1       BEGIN       -       -         -        -
+    1  0          T1       UPDATE      A       5         15       -
+    2  1          T1       UPDATE      C       10        15       -
+    3  2          T1       UPDATE      B       15        30       -
+    4  None       T2       BEGIN       -       -         -        -
+    5  4          T2       UPDATE      F       6         13       -
+    6  5          T2       COMMIT      -       -         -        -
+    7  None       None     CHECKPOINT  -       -         -        -
+    8  None       T3       BEGIN       -       -         -        -
+    9  8          T3       UPDATE      F       13        29       -
+   10  9          T3       UPDATE      E       20        70       -
+   11  10         T3       ABORT       -       -         -        -
+   12  11         T3       CLR         E       70        20       9
+   13  12         T3       CLR         F       29        13       8
+   15  6          T2       END         -       -         -        -
+   16  11         T3       END         -       -         -        -
+   17  3          T1       CLR         B       30        15       2
+   18  17         T1       CLR         C       15        10       1
+   19  18         T1       CLR         A       15        5        0
+   20  19         T1       ABORT       -       -         -        -
+   21  20         T1       END         -       -         -        -
+   22  None       T4       BEGIN       -       -         -        -
+   23  22         T4       UPDATE      A       5         105      -
+   24  23         T4       UPDATE      B       15        65       -
+   25  24         T4       COMMIT      -       -         -        -
+   26  None       None     CHECKPOINT  -       -         -        -
+   27  None       T5       BEGIN       -       -         -        -
+   28  27         T5       UPDATE      C       10        2        -
+   29  28         T5       ABORT       -       -         -        -
+   30  29         T5       CLR         C       2         10       27
+
+  MEMORY [Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  -------------------
+       1         24         1  {'A': 105, 'B': 65}
+       2         30         2  {'C': 10, 'D': 6}
+       3         13         5  {'E': 20, 'F': 13}
+
+  DISK MEMORY [NON-Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  -------------------
+       1         24         1  {'A': 105, 'B': 65}
+       2         18         2  {'C': 10, 'D': 6}
+       3         13         5  {'E': 20, 'F': 13}
+
+  Dirty Page Table(DPT)
+  PageId    recLSN
+--------  --------
+       1        23
+       2        28
+
+Active Transaction Table(ATT)
+TransactionId    status      lastLSN
+---------------  --------  ---------
+T4               COMMIT           25
+T5               ABORT            30
+#####################################################################################
+
+############################# SYSTEM STATE AFTER RECOVERY ###########################
+  Log Records[On MEMORY]
+  LSN    prevLSN  TxnId    type    data    before    after    undoNext
+-----  ---------  -------  ------  ------  --------  -------  ----------
+   32         25  T4       END     -       -         -        -
+   33         29  T5       END     -       -         -        -
+
+  Log Records[On DISK]
+  LSN  prevLSN    TxnId    type        data    before    after    undoNext
+-----  ---------  -------  ----------  ------  --------  -------  ----------
+    0  None       T1       BEGIN       -       -         -        -
+    1  0          T1       UPDATE      A       5         15       -
+    2  1          T1       UPDATE      C       10        15       -
+    3  2          T1       UPDATE      B       15        30       -
+    4  None       T2       BEGIN       -       -         -        -
+    5  4          T2       UPDATE      F       6         13       -
+    6  5          T2       COMMIT      -       -         -        -
+    7  None       None     CHECKPOINT  -       -         -        -
+    8  None       T3       BEGIN       -       -         -        -
+    9  8          T3       UPDATE      F       13        29       -
+   10  9          T3       UPDATE      E       20        70       -
+   11  10         T3       ABORT       -       -         -        -
+   12  11         T3       CLR         E       70        20       9
+   13  12         T3       CLR         F       29        13       8
+   15  6          T2       END         -       -         -        -
+   16  11         T3       END         -       -         -        -
+   17  3          T1       CLR         B       30        15       2
+   18  17         T1       CLR         C       15        10       1
+   19  18         T1       CLR         A       15        5        0
+   20  19         T1       ABORT       -       -         -        -
+   21  20         T1       END         -       -         -        -
+   22  None       T4       BEGIN       -       -         -        -
+   23  22         T4       UPDATE      A       5         105      -
+   24  23         T4       UPDATE      B       15        65       -
+   25  24         T4       COMMIT      -       -         -        -
+   26  None       None     CHECKPOINT  -       -         -        -
+   27  None       T5       BEGIN       -       -         -        -
+   28  27         T5       UPDATE      C       10        2        -
+   29  28         T5       ABORT       -       -         -        -
+   30  29         T5       CLR         C       2         10       27
+
+  MEMORY [Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  -------------------
+       1         24         1  {'A': 105, 'B': 65}
+       2         30         2  {'C': 10, 'D': 6}
+
+  DISK MEMORY [NON-Volatile]
+  pageId    pageLSN    recLSN  data
+--------  ---------  --------  -------------------
+       1         24         1  {'A': 105, 'B': 65}
+       2         18         2  {'C': 10, 'D': 6}
+       3         13         5  {'E': 20, 'F': 13}
+
+  Dirty Page Table(DPT)
+  PageId    recLSN
+--------  --------
+       1        23
+       2        28
+
+Active Transaction Table(ATT)
+TransactionId    status    lastLSN
+---------------  --------  ---------
+#####################################################################################
