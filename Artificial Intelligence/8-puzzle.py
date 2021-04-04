@@ -6,18 +6,18 @@ import math
 t_solutions = 0
 
 #* Gets Solution [DOES NOT GET STUCK ON LOCAL MAXIMA]
-# intital_board = [
-#     ['1', '4', '2'],
-#     [' ', '3', '5'],
-#     ['6', '7', '8']
-# ]
+intital_board = [
+    ['1', '4', '2'],
+    [' ', '3', '5'],
+    ['6', '7', '8']
+]
 
 #* Does Not Get Solution [GETS STUCK ON LOCAL MAXIMA]
-intital_board = [
-    [' ', '2', '3'],
-    ['1', '8', '4'],
-    ['7', '6', '5']
-]
+# intital_board = [
+#     [' ', '2', '3'],
+#     ['1', '8', '4'],
+#     ['7', '6', '5']
+# ]
 
 goal_board = [
     ['1', '2', '3'],
@@ -108,6 +108,8 @@ def generate_solutions(board):
         if get_cost < current_cost:
             current_cost = get_cost
             board = sol
+            #* Take first better neighbour and move forward
+            break
     
     return board, current_cost
 
