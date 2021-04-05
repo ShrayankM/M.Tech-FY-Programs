@@ -9,7 +9,7 @@ class Node:
         self.fcost = 0
         self.parent = None
         self.hcost = 0
-        self.gcost = 0
+        self.cost = 0
     
     def find_heuristic(self, goal):
         self.hcost = sqrt((goal.x - self.x) * (goal.x - self.x) + (goal.y - self.y) * (goal.y - self.y))
@@ -57,6 +57,7 @@ def find_shortest_path(source, goal, graph, nodes):
 
         if current_state.id == goal.id:
             print("Destination Reached")
+            nodes[goal.id].cost = current_state.cost
             closed_check[current_state.id] = current_state.id
             return closed_check
             return
@@ -69,8 +70,9 @@ def find_shortest_path(source, goal, graph, nodes):
             id, cost = neigh
             if closed_check.get(id) != None:
                 continue
-            nodes[id].fcost = nodes[id].hcost + nodes[id].gcost
-            # nodes[id].parent = current_state.id
+            nodes[id].fcost = nodes[id].hcost
+            nodes[id].cost = cost + current_state.cost 
+            # nodes[id].parent = current_state.i
             open_list.put(nodes[id])
             open_check[id] = id
             print(nodes[id])
@@ -112,5 +114,15 @@ if __name__ == "__main__":
     source.fcost = source.gcost + source.hcost
     path = find_shortest_path(source, goal, g, nodes)
 
-    print(path)
-        
+    cost = 0
+    path = [id for id, _ in path.items()]
+
+    path_str = ''
+    for id in range(len(path) - 1):
+        path_str += path[id] + " --> "
+        # cost += nodes[path[id]][1] + nodes[path[id + 1]][1]
+    path_str += goal.id
+
+    print(path_str)
+
+    print("Cost = " + str(nodes[goal.id].cost))

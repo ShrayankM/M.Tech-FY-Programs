@@ -59,6 +59,7 @@ def find_shortest_path(source, goal, graph, nodes):
         open_check.pop(current_state.id)
         if current_state.id == goal.id:
             print("Destination Reached")
+            goal.fcost = current_state.fcost
             return  
         
         closed_check[current_state.id] = current_state.id 
@@ -147,4 +148,5 @@ if __name__ == "__main__":
         start = nodes[start].parent
     path += source.id
     print(path)
+    print("Cost = " + str(nodes[goal.id].fcost))
         
