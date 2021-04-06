@@ -15,6 +15,10 @@ def execute_instructions(instructions):
         if (ins.find('(') != -1):
             operation = ins[0:ins.find('(')]
             if (operation == 'CRASH'):
+
+                #* Modification parts
+                # ds.LSN = ds.flushedLSN + 1
+
                 ds.view_system_state(1)
                 ds.LOG_MEMORY.clear()
                 ds.DPT.clear()
@@ -28,9 +32,14 @@ def execute_instructions(instructions):
                 ds.masterRecord[0] = ds.LSN
                 ds.masterRecord[1] = checkpointData
 
+                #* Modification parts
+                #* Present in code uploaded
+                # log = ds.LogRecord(ds.LSN, None, None, 'CHECKPOINT', '-', '-', '-', '-')
+                # ds.LOG_MEMORY[ds.LSN] = log
+                # ds.LSN += 1
+
                 log = ds.LogRecord(ds.LSN, None, None, 'CHECKPOINT', '-', '-', '-', '-')
                 ds.LOG_MEMORY[ds.LSN] = log
-
                 ds.LSN += 1
 
                 #* Flushing pages from MEMORY TO DISK
@@ -146,12 +155,23 @@ def execute_instructions(instructions):
                         ds.LSN += 1
                     prev = log.prevLSN
                 
-                #* Flushing all logs from MEMORY to DISK
+                #* Modification parts
+                #* Part Present in uploaded code [Not necessary to put log records when abort]
+                # #* Flushing all logs from MEMORY to DISK
+                # for LSN, log in ds.LOG_MEMORY.items():
+                #     ds.LOG_DISK[LSN] = log
+                # ds.LOG_MEMORY.clear()
+
+                # ds.flushedLSN = ds.LSN
+                # print(ds.LSN)
+                # ds.LSN += 1
+
                 for LSN, log in ds.LOG_MEMORY.items():
                     ds.LOG_DISK[LSN] = log
                 ds.LOG_MEMORY.clear()
 
                 ds.flushedLSN = ds.LSN
+                print(ds.LSN)
                 ds.LSN += 1
 
         else:
