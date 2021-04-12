@@ -5,11 +5,11 @@ import sys
 inf = sys.maxsize
 np.random.seed(2)
 
-T = 300
-main_disk_data = np.random.randint(1, 300, 300)
+T = 2048
+main_disk_data = np.random.randint(1, 500, T)
 
-#* Main memory can hold atmost 20 elements
-M = 60
+#* Main memory can hold atmost 148 elements
+M = 148
 main_memory = list()
 
 #* Individual sorted files
@@ -65,7 +65,7 @@ def read_main_disk(files, file_counter):
 #* Sorted Output on the disk 
 main_output = []
 
-S = 15
+S = 0
 sorted_output = []
 
 class data:
@@ -76,7 +76,6 @@ class data:
     def __str__(self):
         return '[' + str(self.value) + ', ' + str(self.id) + ']\t'
 
-#* Heap takes space of 7 elements, so sorted_output gets space for 3 elements
 class Heap:
     def __init__(self):
         self.heap = [data(-1, 0)]
@@ -107,7 +106,7 @@ class Heap:
             self.heap[index] = temp
             self.heapify(index, N)
 
-    def merging(self, N, A):
+    def merging(self, N):
         counter = 0
         while (self.heap[1].value != inf):
             if counter < S:
@@ -115,7 +114,7 @@ class Heap:
                 counter += 1
                 id = self.heap[1].id
 
-                if index_dict[id] >= A: #* Elements in individual Array
+                if index_dict[id] >= len(files[id]): #* Elements in individual Array
                     self.heap[1].value = inf
                     self.heapify(1, N)
                 else:
@@ -141,8 +140,14 @@ def create_index_dict(k):
     
 if __name__ == '__main__':
     make_sorted_files()
-    F = int(T/M)
-    H = M - S
+    # print(files)
+
+    # for id, arr in files.items():
+    #     print(id, arr)
+    F = math.ceil(T/M)
+
+    H = len(files)
+    S = M - H
 
     k = int(math.floor(H/F))
     heap_size = int(k * F)
@@ -159,8 +164,8 @@ if __name__ == '__main__':
         h.heapify(start_index, heap_size)
         start_index -= 1
     
-    h.merging(heap_size, M)
+    h.merging(heap_size)
     print(main_output)
 
-    print(len(main_output))
+    # print(len(main_output))
     
