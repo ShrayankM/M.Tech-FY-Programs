@@ -1,4 +1,4 @@
-from tabulate import tabulate
+# from tabulate import tabulate
 
 def hash_function(h, k):
     return h % k;
@@ -45,4 +45,7 @@ hashed_relation_A = {}
 for record in relation_A:
     h = hash_function(record.company_id, len(relation_A))
     hashed_relation_A[h] = record
+
+for hash_id, record in hashed_relation_A.items():
+    print(hash_id, record)
 
