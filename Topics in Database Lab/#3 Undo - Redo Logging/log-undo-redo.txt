@@ -14,5 +14,5 @@
 <T4 E 10 20>
 <END T1>
 <END T2>
-<ABORT T4>
 <ABORT T3>
+<ABORT T4>
