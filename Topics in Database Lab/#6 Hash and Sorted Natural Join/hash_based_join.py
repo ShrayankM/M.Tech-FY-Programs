@@ -1,51 +1,52 @@
-# from tabulate import tabulate
+from tabulate import tabulate
 
-def hash_function(h, k):
-    return h % k;
+def hash_function(h):
+    return h % 10
 
-class RecordA:
-    def __init__(self, item_id, item_name, item_unit, company_id):
-        self.item_id = item_id
-        self.item_name = item_name
-        self.item_unit = item_unit
-        self.company_id = company_id
-    
-    def __str__(self):
-        return str([str(self.item_id), str(self.item_name), str(self.item_unit), str(self.company_id)])
+table_A = [
+    ['CustId', 'CustName'],
+    [1, 'C1'],
+    [2, 'C2'],
+    [3, 'C3']
+]
 
-
-class RecordB:
-    def __init__(self, company_id, company_name, company_city):
-        self.company_id = company_id
-        self.company_name = company_name
-        self.company_city = company_city
-        self.hash = None
-
-#* The common attribute is company_id
-
-relation_A = list()
-relation_B = list()
-
-relation_A.append(RecordA(1, 'Chex Mix', 'Pcs', 16))
-relation_A.append(RecordA(6, 'Cheez-It', 'Pcs', 15))
-relation_A.append(RecordA(2, 'BN Biscuit', 'Pcs', 15))
-relation_A.append(RecordA(3, 'Mighty Munch', 'Pcs', 17))
-relation_A.append(RecordA(4, 'Pot Rice', 'Pcs', 15))
-relation_A.append(RecordA(5, 'Jaffa Cakes', 'Pcs', 18))
-relation_A.append(RecordA(7, 'Salt n Shake', 'Pcs', 0))
-
-relation_B.append(RecordB(18, 'Order All', 'Boston'))
-relation_B.append(RecordB(15, 'Jack Hill Ltd', 'London'))
-relation_B.append(RecordB(16, 'Akas Foods', 'Delhi'))
-relation_B.append(RecordB(17, 'Foodies', 'London'))
-relation_B.append(RecordB(19, 'Sip-n-Bite', 'New York'))
+table_B = [
+    ['InvoiceId', 'CustomerId', 'Total'],
+    [1, 2, '$44.20'],
+    [2, 2, '$13.37'],
+    [3, 1, '$144.5'],
+    [4, 3, '$501.1'],
+    [5, 3, '$66.77'],
+    [6, 1, '$100.0']
+]
 
 #* Build Phase
-hashed_relation_A = {}
-for record in relation_A:
-    h = hash_function(record.company_id, len(relation_A))
-    hashed_relation_A[h] = record
+build_table = {}
 
-for hash_id, record in hashed_relation_A.items():
-    print(hash_id, record)
+for i in range(1, len(table_A)):
+    h = hash_function(table_A[i][0])
+    if build_table.get(h) == None:
+        build_table[h] = list()
+    t = [table_A[i][j] for j in range(0, len(table_A[i]))]
+    build_table[h].append(t)
 
+# for hash_id, records in build_table.items():
+#     print(hash_id, records)
+
+joined_table = list()
+#* Natural Join Phase
+
+for i in range(1, len(table_B)):
+    h = hash_function(table_B[i][1])
+    if build_table.get(h) == None:
+        continue
+    records_A = build_table[h]
+    t = [table_B[i][j] for j in range(0, len(table_B[i]))]
+    for record in records_A:
+        joined_table.append(list(record + t))
+
+# for record in joined_table:
+#     print(record)
+
+headers = table_A[0] + table_B[0]
+print(tabulate(joined_table, headers))
