@@ -1,13 +1,14 @@
 from tabulate import tabulate
 
+#* Hash function return ascii value
 def hash_function(h):
-    return h % 10
+    return ord(str(h))
 
 table_A = [
-    ['CustId', 'CustName'],
+    ['CustomerId', 'CustomerName'],
     [1, 'C1'],
     [2, 'C2'],
-    [3, 'C3']
+    [3, 'C3'],
 ]
 
 table_B = [
@@ -33,6 +34,7 @@ for i in range(1, len(table_A)):
 # for hash_id, records in build_table.items():
 #     print(hash_id, records)
 
+
 joined_table = list()
 #* Natural Join Phase
 
@@ -41,7 +43,8 @@ for i in range(1, len(table_B)):
     if build_table.get(h) == None:
         continue
     records_A = build_table[h]
-    t = [table_B[i][j] for j in range(0, len(table_B[i]))]
+    # t = [table_B[i][j] for j in range(0, len(table_B[i]))]
+    t = table_B[i]
     for record in records_A:
         joined_table.append(list(record + t))
 
