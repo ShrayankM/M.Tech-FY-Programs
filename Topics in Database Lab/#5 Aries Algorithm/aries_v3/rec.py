@@ -44,6 +44,8 @@ def redo_phase():
     #* Get Minimum LSN to start redo scanning
     for pageId, recLSN in ds.DPT.items():
         if LSN > recLSN: LSN = recLSN
+    
+    print(LSN)
 
     #* Redo all the update instructions
     while ds.LOG_DISK.get(LSN):
@@ -53,18 +55,18 @@ def redo_phase():
         if log.type == 'UPDATE' or log.type == 'CLR':
             pageId = ds.page_mapping[log.dataItem]
             
-            #* Redo the records for pages whose recLSN < LSN
-            for pId, recLSN in ds.DPT.items():
-                #* Checking for ignore conditions
-                if pageId != pId or ds.DISK_MEMORY[pId].recLSN >= LSN:
-                    continue
-                else:
-                    ds.MEMORY[pId].data[log.dataItem] = log.after
-                    ds.MEMORY[pId].pageLSN = log.LSN
+            # #* Redo the records for pages whose recLSN < LSN
+            # for pId, recLSN in ds.DPT.items():
+            #     #* Checking for ignore conditions
+            #     if pageId != pId or ds.DISK_MEMORY[pId].recLSN >= LSN:
+            #         continue
+            #     else:
+            #         ds.MEMORY[pId].data[log.dataItem] = log.after
+            #         ds.MEMORY[pId].pageLSN = log.LSN
 
             #* Redo all records both UPDATE AND CLR
-            # ds.MEMORY[pageId].data[log.dataItem] = log.after
-            # ds.MEMORY[pageId].pageLSN = log.LSN
+            ds.MEMORY[pageId].data[log.dataItem] = log.after
+            ds.MEMORY[pageId].pageLSN = log.LSN
 
     transactions_to_remove = []
     for transactionId, transactionInfo in ds.ATT.items():
