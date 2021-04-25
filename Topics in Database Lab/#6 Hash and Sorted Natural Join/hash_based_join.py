@@ -31,9 +31,6 @@ for i in range(1, len(table_A)):
     t = [table_A[i][j] for j in range(0, len(table_A[i]))]
     build_table[h].append(t)
 
-# for hash_id, records in build_table.items():
-#     print(hash_id, records)
-
 
 joined_table = list()
 #* Natural Join Phase
