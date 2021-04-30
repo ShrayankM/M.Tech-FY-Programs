@@ -98,3 +98,44 @@ def check_consistency(graph, node, color_value, assigned):
         if assigned[neigh] == color_value:
             return False
     return True
+
+def revise(xi, xj):
+    revisied = False
+    remove = True
+
+    for i in range(0, COLORS):
+        if color_matrix[xi][i] == 1:
+            for j in range(0, COLORS):
+                if color_matrix[xj][j] == 1 and i != j:
+                    remove = False
+                    break
+            if remove:
+                color_matrix[xi][i] = 0
+                revisied = True
+    return revisied
+
+def AC3(graph, assigned, node):
+    ac3_queue = list()
+
+    for neigh in graph.adjacency_list[node]:
+        ac3_queue.append((neigh, node))
+    
+    while (len(ac3_queue) != 0):
+        popped = ac3_queue.pop(0)
+
+        xi = popped[0]
+        xj = popped[1]
+
+        if (revise(xi, xj)):
+            if sum(color_matrix[xi]) == 0:
+                return False
+            
+            for neigh in graph.adjacency_list[xi]:
+                if assigned[neigh] == -1 and neigh != xj:
+                    ac3_queue.append((neigh, xi))
+    return True
+
+def revert_inference_ac3(temp):
+    for i in range(0, NODES):
+        color_matrix[i] = temp[i]
+
