@@ -14,9 +14,11 @@ __global__ void addVectors(int* a, int* b, int N) {
 
 int main() {
 
-    int N = 4096 * 4096;
+    int N = 4096 * 4096 * 5;
     int MAX = 4096;
 
+    cudaEvent_t start, stop;
+    float elapsed_time_ms;
     cudaError_t err = cudaSuccess;
     //* Normal vector for initialization
     int* a = (int*)malloc(sizeof(int) * N);
@@ -55,11 +57,16 @@ int main() {
         return 0;
     }
 
+
     int threadsPerBlock = 1024;
-    int blocks =(N + threadsPerBlock - 1) / threadsPerBlock;
+    int blocks = (N + threadsPerBlock - 1) / threadsPerBlock;
     printf("CUDA kernel launch with %d blocks of %d threads\n", blocks, threadsPerBlock);
 
-    clock_t begin = clock();
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start, 0);
+    // clock_t begin = clock();
+
     addVectors<<<blocks, threadsPerBlock>>>(ga, gb, N);
     err = cudaGetLastError();
  
@@ -73,8 +80,13 @@ int main() {
         return 0;
     }
 
-    clock_t end = clock();
-    printf("The elapsed time is %f seconds\n", (double)(end - begin) / CLOCKS_PER_SEC);
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&elapsed_time_ms, start, stop);
+
+    printf("The elapsed time is %f seconds\n", elapsed_time_ms / 1000);
+    // clock_t end = clock();
+    // printf("The elapsed time is %f seconds\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     // for (int i = 0; i < N; i++) 
     //     printf("%d ", a[i]);

@@ -4,8 +4,8 @@
 
 int main() {
 
-    int N = 4096 * 4096;
-    int MAX = 500;
+    int N = 4096 * 4096 * 5;
+    int MAX = 4096;
 
     int* a = (int*)malloc(sizeof(int) * N);
     int* b = (int*)malloc(sizeof(int) * N);
@@ -21,7 +21,7 @@ int main() {
 
     for (int i = 0; i < N; i++) 
         a[i] = a[i] + b[i];
-
+    
     clock_t end = clock();
     printf("The elapsed time is %f seconds\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
