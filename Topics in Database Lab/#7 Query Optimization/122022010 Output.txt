@@ -1,0 +1,96 @@
+//****************************************************************** QUERY (1) *******************************************************************//
+1. Get name, job title and salary of employee where salary is greater than 10000
+   Normal Query    [SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000]
+   Optimized Query [SELECT first_name,last_name,job_title,salary FROM (SELECT first_name,last_name,job_id,salary FROM employees AS e WHERE e.salary > 10000) AS et NATURAL JOIN (select job_id,job_title from jobs) as j]
+
++----------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+                                                                       
+| Query_ID | Duration   | Query                                                                                                                                                                                                |
++----------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+                                                                      
+|        1 | 0.00151600 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                                                                                                 |
+|        2 | 0.00245325 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                                                                                                 |
+|        3 | 0.00177275 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                                                                                                 |
+|        4 | 0.00167975 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                                                                                                 |
+|        5 | 0.00148500 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                                                                                                 |
+|        6 | 0.00203600 | SELECT first_name,last_name,job_title,salary FROM (SELECT first_name,last_name,job_id,salary FROM employees AS e WHERE e.salary > 10000) AS et NATURAL JOIN (select job_id,job_title from jobs) as j |
+|        7 | 0.00160875 | SELECT first_name,last_name,job_title,salary FROM (SELECT first_name,last_name,job_id,salary FROM employees AS e WHERE e.salary > 10000) AS et NATURAL JOIN (select job_id,job_title from jobs) as j |
+|        8 | 0.00146375 | SELECT first_name,last_name,job_title,salary FROM (SELECT first_name,last_name,job_id,salary FROM employees AS e WHERE e.salary > 10000) AS et NATURAL JOIN (select job_id,job_title from jobs) as j |
+|        9 | 0.00163900 | SELECT first_name,last_name,job_title,salary FROM (SELECT first_name,last_name,job_id,salary FROM employees AS e WHERE e.salary > 10000) AS et NATURAL JOIN (select job_id,job_title from jobs) as j |
+|       10 | 0.00042925 | SELECT first_name,last_name,job_title,salary FROM (SELECT first_name,last_name,job_id,salary FROM employees AS e WHERE e.salary > 10000) AS et NATURAL JOIN (select job_id,job_title from jobs) as j |
++----------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+                                                                      
+
++------------+-----------+-------------------------------+----------+
+| first_name | last_name | job_title                     | salary   |
++------------+-----------+-------------------------------+----------+
+| Steven     | King      | President                     | 24000.00 |
+| Neena      | Kochhar   | Administration Vice President | 17000.00 |
+| Lex        | De Haan   | Administration Vice President | 17000.00 |
+| Nancy      | Greenberg | Finance Manager               | 12000.00 |
+| Den        | Raphaely  | Purchasing Manager            | 11000.00 |
+| John       | Russell   | Sales Manager                 | 14000.00 |
+| Karen      | Partners  | Sales Manager                 | 13500.00 |
+| Michael    | Hartstein | Marketing Manager             | 13000.00 |
+| Shelley    | Higgins   | Accounting Manager            | 12000.00 |
++------------+-----------+-------------------------------+----------+
+
+[---- AVERAGE SPEEDUP = 1.241056188 x ----]
+
+//****************************************************************** QUERY (2) ***********************************************************//
+2. Get name and job title of employee whose name have atleast 1 occurrence of letter 't'
+   Normal Query    [SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%']
+   Optimized Query [SELECT first_name,last_name,job_title FROM (SELECT * FROM employees AS e WHERE e.first_name LIKE '%t%') AS et NATURAL JOIN (select job_title,job_id from jobs) as j]
+
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                                                                               |
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|        1 | 0.00198100 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%'                                                                         |
+|        2 | 0.00187550 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%'                                                                         |
+|        3 | 0.00185350 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%'                                                                         |
+|        4 | 0.00188525 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%'                                                                         |
+|        5 | 0.00176875 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%'                                                                         |
+|        6 | 0.00153175 | SELECT first_name,last_name,job_title FROM (SELECT * FROM employees AS e WHERE e.first_name LIKE '%t%') AS et NATURAL JOIN (select job_title,job_id from jobs) as j |                                                         
+|        7 | 0.00156775 | SELECT first_name,last_name,job_title FROM (SELECT * FROM employees AS e WHERE e.first_name LIKE '%t%') AS et NATURAL JOIN (select job_title,job_id from jobs) as j |                                                         
+|        8 | 0.00147300 | SELECT first_name,last_name,job_title FROM (SELECT * FROM employees AS e WHERE e.first_name LIKE '%t%') AS et NATURAL JOIN (select job_title,job_id from jobs) as j |                                                         
+|        9 | 0.00144225 | SELECT first_name,last_name,job_title FROM (SELECT * FROM employees AS e WHERE e.first_name LIKE '%t%') AS et NATURAL JOIN (select job_title,job_id from jobs) as j |                                                         
+|       10 | 0.00137150 | SELECT first_name,last_name,job_title FROM (SELECT * FROM employees AS e WHERE e.first_name LIKE '%t%') AS et NATURAL JOIN (select job_title,job_id from jobs) as j |
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
++------------+-----------+--------------------------+
+| first_name | last_name | job_title                |
++------------+-----------+--------------------------+
+| Steven     | King      | President                |
+| Matthew    | Weiss     | Stock Manager            |
+| Shanta     | Vollman   | Stock Manager            |
+| Jonathon   | Taylor    | Sales Representative     |
+| Britney    | Everett   | Shipping Clerk           |
+| Pat        | Fay       | Marketing Representative |
++------------+-----------+--------------------------+
+
+[---- AVERAGE SPEEDUP = 1.267761042 x ----]
+
+//****************************************************************** QUERY (3) ***********************************************************//
+3. Give me dependent names of employee Diana and John
+   Normal Query    [SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')]
+   Optimized Query [SELECT d.first_name,d.last_name FROM (SELECT employee_id FROM employees AS e WHERE (e.first_name = 'Diana' OR e.first_name = 'William')) AS et NATURAL JOIN dependents AS d]
++----------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                                                                                                                |
++----------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+  
+|        1 | 0.00156975 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                                 |
+|        2 | 0.00186975 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                                 |
+|        3 | 0.00219125 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                                 |
+|        4 | 0.00150950 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                                 |
+|        5 | 0.00151975 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                                 |
+|        6 | 0.00059725 | SELECT d.first_name,d.last_name FROM (SELECT employee_id FROM employees AS e WHERE (e.first_name = 'Diana' OR e.first_name = 'William')) AS et NATURAL JOIN dependents AS d                          |
+|        7 | 0.00143850 | SELECT d.first_name,d.last_name FROM (SELECT employee_id FROM employees AS e WHERE (e.first_name = 'Diana' OR e.first_name = 'William')) AS et NATURAL JOIN dependents AS d                          |
+|        8 | 0.00172850 | SELECT d.first_name,d.last_name FROM (SELECT employee_id FROM employees AS e WHERE (e.first_name = 'Diana' OR e.first_name = 'William')) AS et NATURAL JOIN dependents AS d                          |
+|        9 | 0.00142400 | SELECT d.first_name,d.last_name FROM (SELECT employee_id FROM employees AS e WHERE (e.first_name = 'Diana' OR e.first_name = 'William')) AS et NATURAL JOIN dependents AS d                          |
+|       10 | 0.00136850 | SELECT d.first_name,d.last_name FROM (SELECT employee_id FROM employees AS e WHERE (e.first_name = 'Diana' OR e.first_name = 'William')) AS et NATURAL JOIN dependents AS d                          |
++----------+------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
++------------+-----------+
+| first_name | last_name |
++------------+-----------+
+| Dan        | Lorentz   |
+| Penelope   | Gietz     |
++------------+-----------+
+
+[---- AVERAGE SPEEDUP = 1.320776299 x ----]     

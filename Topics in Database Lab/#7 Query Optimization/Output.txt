@@ -1,0 +1,138 @@
+QUERY (1)
++----------+------------+---------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                       |
++----------+------------+---------------------------------------------------------------------------------------------+
+|        1 | 0.00139800 | select * from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        2 | 0.00189675 | select * from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        3 | 0.00245050 | select * from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        4 | 0.00097750 | select * from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        5 | 0.00105100 | select * from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        6 | 0.00124400 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000        |
+|        7 | 0.00104650 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000        |
+|        8 | 0.00113625 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000        |
+|        9 | 0.00192525 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000        |
+|       10 | 0.00251250 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000        |
++----------+------------+---------------------------------------------------------------------------------------------+
+
+QUERY (3)
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                                                                               |
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|        1 | 0.00195625 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                |
+|        2 | 0.00211250 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                |
+|        3 | 0.00199125 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                |
+|        4 | 0.00113975 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                |
+|        5 | 0.00201050 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                |
+|        6 | 0.00100200 | select * from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        7 | 0.00093050 | select * from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        8 | 0.00283350 | select * from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        9 | 0.00248050 | select * from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       10 | 0.00261700 | select * from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |                                                                                                                                                    |
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+QUERY (2)
++----------+------------+----------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                              |
++----------+------------+----------------------------------------------------------------------------------------------------+                                                                                      |
+|        1 | 0.00226750 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id and e.first_name LIKE '%t%'        |
+|        2 | 0.00098825 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id and e.first_name LIKE '%t%'        |
+|        3 | 0.00149800 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id and e.first_name LIKE '%t%'        |
+|        4 | 0.00147800 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id and e.first_name LIKE '%t%'        |
+|        5 | 0.00285350 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id and e.first_name LIKE '%t%'        |
+|        6 | 0.00218200 | select * from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|        7 | 0.00191200 | select * from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|        8 | 0.00054200 | select * from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|        9 | 0.00069675 | select * from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       10 | 0.00044750 | select * from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
++----------+------------+----------------------------------------------------------------------------------------------------+
+
+
++----------+------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                                                                                                      |
++----------+------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|        1 | 0.00183175 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs                                                            |
+|        2 | 0.00200500 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs                                                            |                                                                                                                                                                    |
+|        4 | 0.00153900 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
++----------+------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+OPTIMIZED (1)
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                                           |
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------+
+|        1 | 0.00220100 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        2 | 0.00062925 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        3 | 0.00220525 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        4 | 0.00179075 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        5 | 0.00151350 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        6 | 0.00048650 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        7 | 0.00145625 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        8 | 0.00145950 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|        9 | 0.00139450 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|       10 | 0.00141600 | select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs |
+|       11 | 0.00145725 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       12 | 0.00162625 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       13 | 0.00141725 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       14 | 0.00186200 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       15 | 0.00148625 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       16 | 0.00142300 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       17 | 0.00141175 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       18 | 0.00138050 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       19 | 0.00148125 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |
+|       20 | 0.00139175 | SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000                                            |                                                                                                                  |
++----------+------------+---------------------------------------------------------------------------------------------------------------------------------+
+
+OPTIMIZED (2)
++----------+------------+---------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                       |
++----------+------------+---------------------------------------------------------------------------------------------+
+|        1 | 0.00146625 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        2 | 0.00181550 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        3 | 0.00171425 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        4 | 0.00191325 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        5 | 0.00176125 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        6 | 0.00174600 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        7 | 0.00184850 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        8 | 0.00157575 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|        9 | 0.00180100 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|       10 | 0.00186750 | SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id AND e.first_name LIKE '%t%' |
+|       11 | 0.00147200 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       12 | 0.00152625 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       13 | 0.00138000 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       14 | 0.00179425 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       15 | 0.00186675 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       16 | 0.00066225 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       17 | 0.00139475 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       18 | 0.00179075 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       19 | 0.00162700 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
+|       20 | 0.00181650 | select first_name,last_name,job_title from (select * from employees as e where e.first_name like '%t%') as et natural join jobs |
++----------+------------+---------------------------------------------------------------------------------------------+
+
+OPTIMIZED (3)
++----------+------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                                                                                                      |
++----------+------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+                                                                                                                                                                               |
+|        5 | 0.00164775 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        6 | 0.00145300 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        7 | 0.00172275 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        8 | 0.00184000 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|        9 | 0.00177225 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       10 | 0.00148125 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       11 | 0.00141725 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       12 | 0.00118425 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       13 | 0.00176500 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       14 | 0.00144650 | select d.first_name,d.last_name from (select * from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id |
+|       15 | 0.00168325 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       16 | 0.00161175 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       17 | 0.00181350 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       18 | 0.00151600 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       19 | 0.00182725 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       20 | 0.00144425 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       21 | 0.00179850 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       22 | 0.00140275 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       23 | 0.00148425 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
+|       24 | 0.00186450 | SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William')                                                      |
++----------+------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
+
+

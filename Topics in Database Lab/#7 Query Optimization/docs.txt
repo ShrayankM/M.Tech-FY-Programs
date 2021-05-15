@@ -1,0 +1,84 @@
+Comparing query evaluation performance before and after applying query optimization techniques.
+Use SQL server and connect it with SQL workbench .
+
+Database:
+
+https://www.sqltutorial.org/wp-content/uploads/2020/04/mysql.txt
+
+https://www.sqltutorial.org/wp-content/uploads/2020/04/mysql-data.txt
+
+Assignment:
+
+
+Draw a canonical operator tree for following queries and denote the number of rows of the intermediate result sets of each operation in the tree:
+
+1. Get name, job title and salary of employee where salary is greater than 10000
+
+SELECT *
+FROM employees as e, jobs as j
+where j.job_id=e.job_id
+and salary > 10000;
+
+2. Get name and job title of employee whose name have atleast 1 occurrence of letter 't'
+
+SELECT *
+FROM employees as e, jobs as j
+where j.job_id=e.job_id
+group by j.job_id
+having e.first_name like '%t%';
+
+SELECT *
+FROM employees as e, jobs as j
+where j.job_id=e.job_id
+having e.first_name like '%t%';
+
+3. Give me dependent names of employee Diana and John
+
+select *
+from employees e, dependents d
+where e.employee_id = d.employee_id
+and (e.first_name = 'Diana' or e.first_name = 'William');
+
+2nd Query ERROR Resolutio: SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+
+Refactored Querys
+1) SELECT * FROM employees AS e, jobs AS j WHERE j.job_id=e.job_id AND e.salary > 10000;
+
+2) SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id GROUP BY j.job_id HAVING e.first_name LIKE '%t%';
+   SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id and e.first_name LIKE '%t%';
+
+3) SELECT * FROM employees e, dependents d WHERE e.employee_id = d.employee_id AND (e.first_name = 'Diana' OR e.first_name = 'William');
+
+
+
+OPtimized TRials;
+
+1) select * from jobs as j natural join employees as e where e.salary > 10000;
+   SELECT * FROM (SELECT * FROM employees as e where e.salary > 10000) as et inner join jobs as j on et.job_id = j.job_id;
+   select * from (select * from employees as e where e.salary > 10000) as et natural join jobs;
+
+
+2) SELECT * FROM (select * from employees as e where e.first_name LIKE '%t%') as et, jobs AS j WHERE j.job_id=et.job_id GROUP BY j.job_id;
+   select * from (select * from (select * from employees natural join jobs) as et) as t group by t.job_id having t.first_name Like '%t%';
+   select * from (select * from employees as e where e.first_name like '%t%' group by e.job_id) as et natural join jobs;
+   select * from (select * from employees as e where e.first_name like '%t%') as et natural join jobs;
+
+
+3) select d.first_name,d.last_name from (select employee_id from employees as e where (e.first_name = 'Diana' OR e.first_name = 'William')) as et, dependents as d where et.employee_id = d.employee_id;
+
+
+
+
+
+
+
+
+
+New Optimized:
+1) select first_name,last_name,job_title,salary from (select * from employees as e where e.salary > 10000) as et natural join jobs;
+
+
+2) SELECT * FROM employees as e, jobs AS j WHERE j.job_id=e.job_id where e.first_name LIKE '%t%';
+
+
+3) 
